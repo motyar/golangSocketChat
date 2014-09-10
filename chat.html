@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8" />
+
+<title>Creating webSocket in golang, Chat example</title>
+
+<style>
+    #msg{
+        width: 98%;
+        margin: 0px 1%;
+        position: fixed;
+        bottom: 20px;
+        left: 0px;
+    }
+    #output{
+        position: fixed;
+        bottom: 50px;
+        width: 98%;
+        margin: 0px 1%;
+        width: 2000px;
+        overflow-y: scroll; 
+    }
+</style>
+<script language="javascript" type="text/javascript">
+
+  var wsUri = "ws://162.243.216.116:1212/socket";
+  var output;
+  var msgInput;
+
+  function init()
+  {
+    output = document.getElementById("output");
+    testWebSocket();
+    msgInput = document.getElementById("msg");
+  }
+
+  function testWebSocket()
+  {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+    writeToScreen("CONNECTED");
+  }
+
+  function onClose(evt)
+  {
+    writeToScreen("DISCONNECTED");
+  }
+
+  function onMessage(evt)
+  {
+    writeToScreen('<span style="color: blue;">' + evt.data+'</span>');
+    var objDiv = document.getElementById("output");
+    objDiv.scrollTop = objDiv.scrollHeight;
+    //websocket.close();
+  }
+
+  function onError(evt)
+  {
+    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doSend(message)
+  {
+    //writeToScreen("SENT: " + message); 
+    websocket.send(message);
+  }
+
+  function writeToScreen(message)
+  {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+
+function send(){
+    msgInput.focus();
+    doSend(msgInput.value);
+    msgInput.value='';
+    return false;
+}
+  window.addEventListener("load", init, false);
+
+</script>
+
+<h2>Creating webSocket in golang, Chat example</h2>
+
+<div id="output"></div>
+<form onsubmit="return send(); return false;";>
+    <input style="width:100%;" id="msg" type="text" placeholder="Type and hit enter">
+</form>
